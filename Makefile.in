@@ -47,6 +47,7 @@ export:: $(FILES) yamlpp.ps
 	cp $(FILES) export/$(NAME)
 	cd export; tar zcf $(NAME).tar.gz $(NAME)
 	cd export; cp $(NAME).tar.gz $(FTP)
+	cp README $(FTP)/README.yamlpp
 
 clean::
 	rm -f yamlpp yamlpp.ml yamlpp.tex
