@@ -83,8 +83,7 @@ let extract_name =
 
 (*s The reference [skip_tag] contains the name of the closing tag that
     should stop the skipping of input. It is used for both languages
-    and \verb!#ifdef! tags. The boolean [serious] indicates whether the
-    beginning of the document (tag \verb!<html>!) was already encountered. *)
+    and \verb!#ifdef! tags. *)
 
 let skip_tag = ref ""
 
