@@ -57,7 +57,7 @@ let is_macro = Hashtbl.mem macros
 
 let _ = 
   add_macro "yamlpp" 
-  "<a href=\"http://www.lri.fr/~filliatr/ftp/ocaml/misc/\">yamlpp</a>"
+  "<a href=\"http://www.lri.fr/~filliatr/yamlpp.<#language>.html\">yamlpp</a>"
 
 let _ = 
   let tm = Unix.localtime (Unix.time ()) in
@@ -161,6 +161,9 @@ and skip_until = parse
 (*s Processing a file is just calling [process]. *)
 
 let process_file f = 
+  if not (Sys.file_exists f) then begin
+    eprintf "Error: %s: no such file\n" f; exit 1
+  end;
   let c = open_in f in
   let lb = from_channel c in
   process lb;
