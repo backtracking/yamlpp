@@ -10,7 +10,7 @@ BINDIR = @bindir@
 all: yamlpp
 
 yamlpp: yamlpp.ml
-	$(OCAMLOPT) -o yamlpp str.cmxa yamlpp.ml
+	$(OCAMLOPT) -o yamlpp str.cmxa unix.cmxa yamlpp.ml
 
 doc: yamlpp.dvi
 

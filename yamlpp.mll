@@ -53,6 +53,19 @@ let find_macro m =
 
 let is_macro = Hashtbl.mem macros
 
+(*s Predefined macros. *)
+
+let _ = 
+  add_macro "yamlpp" 
+  "<a href=\"http://www.lri.fr/~filliatr/ftp/ocaml/misc/\">yamlpp</a>"
+
+let _ = 
+  let tm = Unix.localtime (Unix.time ()) in
+  let d = tm.Unix.tm_mday 
+  and m = succ tm.Unix.tm_mon
+  and y = 1900 + tm.Unix.tm_year in
+  add_macro "date" (sprintf "%d/%d/%d" d m y)
+
 (*s Buffer for macros' definitions. *)
 
 let mbuf = Buffer.create 1024
@@ -159,11 +172,11 @@ let process_file f =
 let usage () =
   prerr_endline "usage: yamlpp [-l lang] [-o file] files";
   prerr_endline "";
-  prerr_endline "Languages:        <#fr> ... </#fr> <#en> ... </#en>";
-  prerr_endline "Macro definition: <#def m> ... </#def>";
-  prerr_endline "Macro use:        <#m>";
-  prerr_endline "Macro test:       <#ifdef m> ... </#ifdef>";
-  prerr_endline "Predefined macro: <#language>";
+  prerr_endline "Languages:         <#fr> ... </#fr> <#en> ... </#en>";
+  prerr_endline "Macro definition:  <#def m> ... </#def>";
+  prerr_endline "Macro use:         <#m>";
+  prerr_endline "Macro test:        <#ifdef m> ... </#ifdef>";
+  prerr_endline "Predefined macros: <#language> <#date> <#yamlpp>";
   prerr_endline "";
   prerr_endline "Copyright (C) 2001 Jean-Christophe FILLIÂTRE";
   exit 1
