@@ -1,0 +1,10 @@
+Makefile
+config.cache
+config.status
+yamlpp.ml
+yamlpp
+test.fr.html
+test.en.html
+yamlpp.tex
+yamlpp.ps
+export

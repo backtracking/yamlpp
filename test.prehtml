@@ -1,0 +1,18 @@
+<#def navig>
+<#fr><a href=index.en.html>English</a></#fr>
+<#en><a href=index.fr.html>Français</a></#en>
+</#def>
+<#def GNU><a href="http://www.gnu.org/">GNU</a></#def>
+
+<html>
+<head>
+<title><#fr>Titre Français</#fr><#en>English title</#en></title>
+</head>
+
+<body>
+<#fr>N'hésitez pas à visiter le site de <#GNU>.</#fr>
+<#en>Have a nice time visiting the <#GNU> web site.</#en>
+
+<#navig>
+</body>
+</html>

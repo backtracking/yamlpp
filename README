@@ -1,0 +1,57 @@
+
+yamlpp is a very simple HTML preprocessor inspired by Nicolas Thiery's
+htmlpp (see htmlpp.sourceforge.net). yamlpp is Copyright (C) 2001
+Jean-Christophe FILLIÂTRE and freely distributed under GPL.
+
+INSTALLATION
+============
+
+  ./configure
+  make 
+  make install
+
+  Default installation is in /usr/bin. You can specify an alternate directory
+  with ./configure --bindir dir
+
+
+USAGE
+=====
+  usage: yamlpp [-l lang] [-o file] files
+
+  Languages:        <#fr> ... </#fr> <#en> ... </#en> <#it> ... </#it>
+  Macro definition: <#def m> ... </#def>
+  Macro use:        <#m>
+  Macro test:       <#ifdef m> ... </#ifdef>
+  Predefined macro: <#language>
+
+
+EXAMPLE
+=======
+
+  Your input file index.prehtml is the following
+
+  ===index.prehtml======================================================
+  <#def navig>
+  <#fr><a href=index.en.html>English</a></#fr>
+  <#en><a href=index.fr.html>Français</a></#en>
+  </#def>
+  <#def GNU><a href="http://www.gnu.org/">GNU</a></#def>
+
+  <html>
+  <head>
+  <title><#fr>Titre Français</#fr><#en>English title</#en></title>
+  </head>
+
+  <body>
+  <#fr>N'hésitez pas à visiter le site de <#GNU>.</#fr>
+  <#en>Have a nice time visiting the <#GNU> web site.</#en>
+
+  <#navig>
+  </body>
+  </html>
+  ======================================================================
+
+  and you produce the corresponding French and English pages with
+
+    yamlpp -l fr -o index.fr.html index.prehtml
+    yamlpp -l en -o index.en.html index.prehtml

@@ -1,0 +1,56 @@
+
+OCAMLOPT=@OCAMLOPT@
+OCAMLLEX=@OCAMLLEX@
+
+# where to install
+
+exec_prefix=/usr
+BINDIR = @bindir@
+
+all: yamlpp
+
+yamlpp: yamlpp.ml
+	$(OCAMLOPT) -o yamlpp str.cmxa yamlpp.ml
+
+doc: yamlpp.dvi
+
+yamlpp.dvi: yamlpp.mll
+	ocamlweb -s -o yamlpp.tex yamlpp.mll
+	latex yamlpp && latex yamlpp
+
+yamlpp.ps: yamlpp.dvi
+	dvips yamlpp.dvi -o yamlpp.ps
+
+local:: yamlpp
+	cp yamlpp $$HOME/bin/$$OSTYPE
+
+install:: yamlpp
+	mkdir -p $(BINDIR)
+	cp yamlpp $(BINDIR)/yamlpp
+
+yamlpp.ml: yamlpp.mll
+	$(OCAMLLEX) yamlpp.mll
+
+test: yamlpp test.prehtml
+	./yamlpp -l fr -o test.fr.html test.prehtml
+	./yamlpp -l en -o test.en.html test.prehtml
+
+FTP=$$HOME/WWW/ftp/ocaml/misc
+VERSION=0.1
+NAME=yamlpp-$(VERSION)
+FILES=GPL README Makefile.in configure yamlpp.mll
+
+export:: $(FILES) yamlpp.ps
+	cp yamlpp.mll $(FTP)
+	gzip --best -c yamlpp.ps > $(FTP)/yamlpp.ps.gz
+	mkdir -p export/$(NAME)
+	cp $(FILES) export/$(NAME)
+	cd export; tar zcf $(NAME).tar.gz $(NAME)
+	cd export; cp $(NAME).tar.gz $(FTP)
+
+clean::
+	rm -f yamlpp yamlpp.ml yamlpp.tex
+	rm -f *~ *.cm[iox] *.o
+	rm -f *.log *.aux *.dvi yamlpp.ps
+
+
