@@ -18,11 +18,11 @@ USAGE
 =====
   usage: yamlpp [-l lang] [-o file] files
 
-  Languages:        <#fr> ... </#fr> <#en> ... </#en> <#it> ... </#it>
-  Macro definition: <#def m> ... </#def>
-  Macro use:        <#m>
-  Macro test:       <#ifdef m> ... </#ifdef>
-  Predefined macro: <#language>
+  Languages:         <#fr> ... </#fr> <#en> ... </#en> <#it> ... </#it>
+  Macro definition:  <#def m> ... </#def>
+  Macro use:         <#m>
+  Macro test:        <#ifdef m> ... </#ifdef>
+  Predefined macros: <#language> <#date> <#yamlpp>
 
 
 EXAMPLE
