@@ -92,7 +92,7 @@ let skip_tag = ref ""
 (*s Regular expressions shortcuts. *)
 
 let space = [' ' '\t' '\n']
-let ident = ['0'-'9' 'a'-'z' 'A'-'Z']+
+let ident = ['0'-'9' 'a'-'z' 'A'-'Z' '_' '-']+
 let lang = "fr" | "en" | "it"
 
 (*s The entry point of the filter is [process]. If we encounter a
