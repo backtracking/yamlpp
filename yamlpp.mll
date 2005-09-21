@@ -70,17 +70,6 @@ let _ =
 
 let mbuf = Buffer.create 1024
 
-(*s Function to extract the macro name in a tag \verb!<#def name>! or
-    \verb!<#ifdef name>!. *)
-
-let extract_name =
-  let r = Str.regexp "\\([a-zA-Z0-9]+\\)[ \t\n]*>" in
-  fun s -> 
-    try
-      let _ = Str.search_forward r s 0 in Str.matched_group 1 s
-    with Not_found -> 
-      assert false
-
 (*s The reference [skip_tag] contains the name of the closing tag that
     should stop the skipping of input. It is used for both languages
     and \verb!#ifdef! tags. *)
@@ -102,15 +91,13 @@ let lang = "fr" | "en" | "it"
     \verb!#ifdef! then we skip everything until \verb!#/ifdef!. *)
 
 rule process = parse
-  | "<#def" space+ ident space* ">"
-      { let m = extract_name (lexeme lexbuf) in
-	Buffer.clear mbuf;
+  | "<#def" space+ (ident as m) space* ">"
+      { Buffer.clear mbuf;
 	def_body lexbuf;
 	add_macro m (Buffer.contents mbuf);
 	process lexbuf }
-  | "<#ifdef" space+ ident space* ">"
-      { let m = extract_name (lexeme lexbuf) in
-	if not (is_macro m) then begin 
+  | "<#ifdef" space+ (ident as m) space* ">"
+      { if not (is_macro m) then begin 
 	  skip_tag := "ifdef"; skip_until lexbuf
 	end;
 	process lexbuf }
