@@ -70,12 +70,6 @@ let _ =
 
 let mbuf = Buffer.create 1024
 
-(*s The reference [skip_tag] contains the name of the closing tag that
-    should stop the skipping of input. It is used for both languages
-    and \verb!#ifdef! tags. *)
-
-let skip_tag = ref ""
-
 }
 
 (*s Regular expressions shortcuts. *)
@@ -97,14 +91,12 @@ rule process = parse
 	add_macro m (Buffer.contents mbuf);
 	process lexbuf }
   | "<#ifdef" space+ (ident as m) space* ">"
-      { if not (is_macro m) then begin 
-	  skip_tag := "ifdef"; skip_until lexbuf
-	end;
+      { if not (is_macro m) then skip_until "ifdef" 0 lexbuf;
 	process lexbuf }
   | "<#" lang ">" 
       { let s = lexeme lexbuf in
 	let l = String.sub s 2 (String.length s - 3) in
-	if l <> !lang then begin skip_tag := l; skip_until lexbuf end;
+	if l <> !lang then skip_until l 0 lexbuf;
 	process lexbuf }
   | "</#" ident ">"
       { process lexbuf }
@@ -132,16 +124,22 @@ and def_body = parse
 
 (*s Skips input until a closing tag with name [!skip_tag]. *)
 
-and skip_until = parse
-  | "</#" ident ">"
-      { let s = lexeme lexbuf in
-	let flag = String.sub s 3 (String.length s - 4) in
-	if flag <> !skip_tag then skip_until lexbuf }
+and skip_until skip_tag level = parse
+  | "<#" (ident as tag) [^'>']* ">" 
+      { let level = if tag = skip_tag then level+1 else level in 
+	skip_until skip_tag level lexbuf
+      }
+  | "</#" (ident as tag) ">"
+      { if tag = skip_tag then 
+	    if level = 0 then () else skip_until skip_tag (level-1) lexbuf
+	else 
+	    skip_until skip_tag level lexbuf 
+      }
   | eof 
-      { eprintf "*** warning: couldn't find end of flag %s\n" !skip_tag; 
+      { eprintf "*** warning: couldn't find end of flag %s\n" skip_tag; 
 	flush stderr }
   | _ 
-      { skip_until lexbuf }
+      { skip_until skip_tag level lexbuf }
 
 {
 

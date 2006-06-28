@@ -55,3 +55,11 @@ EXAMPLE
 
     yamlpp -l fr -o index.fr.html index.prehtml
     yamlpp -l en -o index.en.html index.prehtml
+
+
+CHANGES
+=======
+
+version 0.3
+  o fixed bug with nested #ifdef (patch contributed by Pierre Letouzey)
+
