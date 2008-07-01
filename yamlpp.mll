@@ -76,7 +76,7 @@ let mbuf = Buffer.create 1024
 
 let space = [' ' '\t' '\n']
 let ident = ['0'-'9' 'a'-'z' 'A'-'Z' '_' '-']+
-let lang = "fr" | "en" | "it"
+let lang = "fr" | "en" | "it" | "de"
 
 (*s The entry point of the filter is [process]. If we encounter a
     \verb!#def! then we read the body in buffer [mbuf] with entry

@@ -36,7 +36,7 @@ test: yamlpp test.prehtml
 	./yamlpp -l en -o test.en.html test.prehtml
 
 FTP=$$HOME/WWW/ftp/ocaml/misc
-VERSION=0.3
+VERSION=0.4
 NAME=yamlpp-$(VERSION)
 FILES=GPL README Makefile.in configure yamlpp.mll
 
