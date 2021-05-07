@@ -8,3 +8,6 @@ test.en.html
 yamlpp.tex
 yamlpp.ps
 export
+*.cm*
+*.o
+config.log
