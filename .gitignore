@@ -11,3 +11,5 @@ export
 *.cm*
 *.o
 config.log
+configure.in
+autom4te.cache/
