@@ -31,7 +31,7 @@ install:: yamlpp
 yamlpp.ml: yamlpp.mll
 	$(OCAMLLEX) yamlpp.mll
 
-test: yamlpp test.prehtml
+test: yamlpp test.prehtml file-to-include.prehtml
 	./yamlpp -l fr -o test.fr.html test.prehtml
 	./yamlpp -l en -o test.en.html test.prehtml
 
@@ -53,5 +53,3 @@ clean::
 	rm -f yamlpp yamlpp.ml yamlpp.tex
 	rm -f *~ *.cm[iox] *.o
 	rm -f *.log *.aux *.dvi yamlpp.ps
-
-
