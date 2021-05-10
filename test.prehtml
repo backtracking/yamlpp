@@ -10,8 +10,8 @@
 </head>
 
 <body>
-<#fr>N'hésitez pas à visiter le site de <#GNU>.</#fr>
-<#en>Have a nice time visiting the <#GNU> web site.</#en>
+
+<#include "file-to-include.prehtml">
 
 <#fr>Formatté avec <#yamlpp> le <#date></#fr>
 <#en>Formatted with <#yamlpp> on <#date></#en>

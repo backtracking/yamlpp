@@ -1,15 +1,15 @@
 (*
  * yamlpp - a simple HTML preprocesseur
  * Copyright (C) 2001 Jean-Christophe FILLIÂTRE
- * 
+ *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * See the GNU General Public License version 2 for more details
  * (enclosed in the file GPL).
  *)
@@ -33,7 +33,7 @@ open Lexing
 let lang = ref "fr"
 let out_channel = ref stdout
 
-let set_output_to_file f = 
+let set_output_to_file f =
   out_channel := open_out f
 
 let close_output () =
@@ -47,21 +47,21 @@ let macros = (Hashtbl.create 97 : (string,string) Hashtbl.t)
 
 let add_macro = Hashtbl.add macros
 
-let find_macro m = 
-  try Hashtbl.find macros m 
+let find_macro m =
+  try Hashtbl.find macros m
   with Not_found -> eprintf "*** warning: undefined macro %s\n" m; ""
 
 let is_macro = Hashtbl.mem macros
 
 (*s Predefined macros. *)
 
-let _ = 
-  add_macro "yamlpp" 
+let _ =
+  add_macro "yamlpp"
   "<a href=\"http://www.lri.fr/~filliatr/yamlpp.<#language>.html\">yamlpp</a>"
 
-let _ = 
+let _ =
   let tm = Unix.localtime (Unix.time ()) in
-  let d = tm.Unix.tm_mday 
+  let d = tm.Unix.tm_mday
   and m = succ tm.Unix.tm_mon
   and y = 1900 + tm.Unix.tm_year in
   add_macro "date" (sprintf "%d/%d/%d" d m y)
@@ -69,6 +69,12 @@ let _ =
 (*s Buffer for macros' definitions. *)
 
 let mbuf = Buffer.create 1024
+
+(*s for inclusion of files *)
+
+let string_buf = Buffer.create 128
+
+let do_include = ref (fun (s:string) -> ())
 
 }
 
@@ -90,10 +96,17 @@ rule process = parse
 	def_body lexbuf;
 	add_macro m (Buffer.contents mbuf);
 	process lexbuf }
+  | "<#include \""
+      { Buffer.clear string_buf;
+        let f = string lexbuf in
+        closing_rangle lexbuf;
+        !do_include f;
+        process lexbuf
+        }
   | "<#ifdef" space+ (ident as m) space* ">"
       { if not (is_macro m) then skip_until "ifdef" 0 lexbuf;
 	process lexbuf }
-  | "<#" lang ">" 
+  | "<#" lang ">"
       { let s = lexeme lexbuf in
 	let l = String.sub s 2 (String.length s - 3) in
 	if l <> !lang then skip_until l 0 lexbuf;
@@ -107,9 +120,9 @@ rule process = parse
 	let lb = from_string body in
 	process lb;
 	process lexbuf }
-  | eof 
+  | eof
       { () }
-  | _ 
+  | _
       { output_string (lexeme lexbuf); process lexbuf }
 
 (*s Reads a macro body and stores it in buffer [mbuf]. *)
@@ -117,7 +130,7 @@ rule process = parse
 and def_body = parse
   | "</#def>"
       { () }
-  | eof 
+  | eof
       { eprintf "Error: Unterminated macro definition\n"; exit 1}
   | _
       { Buffer.add_string mbuf (lexeme lexbuf); def_body lexbuf }
@@ -125,21 +138,39 @@ and def_body = parse
 (*s Skips input until a closing tag with name [!skip_tag]. *)
 
 and skip_until skip_tag level = parse
-  | "<#" (ident as tag) [^'>']* ">" 
-      { let level = if tag = skip_tag then level+1 else level in 
+  | "<#" (ident as tag) [^'>']* ">"
+      { let level = if tag = skip_tag then level+1 else level in
 	skip_until skip_tag level lexbuf
       }
   | "</#" (ident as tag) ">"
-      { if tag = skip_tag then 
+      { if tag = skip_tag then
 	    if level = 0 then () else skip_until skip_tag (level-1) lexbuf
-	else 
-	    skip_until skip_tag level lexbuf 
+	else
+	    skip_until skip_tag level lexbuf
       }
-  | eof 
-      { eprintf "*** warning: couldn't find end of flag %s\n" skip_tag; 
+  | eof
+      { eprintf "*** warning: couldn't find end of flag %s\n" skip_tag;
 	flush stderr }
-  | _ 
+  | _
       { skip_until skip_tag level lexbuf }
+
+and closing_rangle = parse
+  | space* ">"
+      { () }
+  | _
+      { eprintf "Error: missing closing '>'\n"; exit 1}
+
+and string = parse
+  | "\""
+      { Buffer.contents string_buf }
+  | eof
+      { eprintf "Error: Unterminated string\n"; exit 1 }
+  | ['\032'-'\126'] as c
+      { Buffer.add_char string_buf c;
+        string lexbuf }
+  | _
+      { eprintf "Error: illegal character in string\n"; exit 1 }
+
 
 {
 
@@ -155,7 +186,7 @@ let yamlpp_message () =
 
 (*s Processing a file is just calling [process]. *)
 
-let process_file f = 
+let process_file f =
   if not (Sys.file_exists f) then begin
     eprintf "Error: %s: no such file\n" f; exit 1
   end;
@@ -173,6 +204,7 @@ let usage () =
   prerr_endline "Macro definition:  <#def m> ... </#def>";
   prerr_endline "Macro use:         <#m>";
   prerr_endline "Macro test:        <#ifdef m> ... </#ifdef>";
+  prerr_endline "File inclusion:    <#include \"f\">";
   prerr_endline "Predefined macros: <#language> <#date> <#yamlpp>";
   prerr_endline "";
   prerr_endline "Copyright (C) 2001 Jean-Christophe FILLIÂTRE";
@@ -191,13 +223,14 @@ let rec parse = function
 
 (*s Main program. *)
 
-let main () = 
+let main () =
+  do_include := process_file;
   let files = parse (List.tl (Array.to_list Sys.argv)) in
   add_macro "language" !lang;
   yamlpp_message ();
   List.iter process_file files;
   close_output ()
-	  
+
 let _ = Printexc.catch main ()
 
 }
