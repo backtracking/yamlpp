@@ -39,7 +39,7 @@ let set_output_to_file f =
 let close_output () =
   if !out_channel != stdout then close_out !out_channel
 
-let output_string s = Pervasives.output_string !out_channel s
+let output_string s = Stdlib.output_string !out_channel s
 
 (*s Macros are stored in the hash table [macros]. *)
 
@@ -57,7 +57,7 @@ let is_macro = Hashtbl.mem macros
 
 let _ =
   add_macro "yamlpp"
-  "<a href=\"http://www.lri.fr/~filliatr/yamlpp.<#language>.html\">yamlpp</a>"
+  "<a href=\"https://github.com/backtracking/yamlpp\">yamlpp</a>"
 
 let _ =
   let tm = Unix.localtime (Unix.time ()) in
@@ -177,9 +177,9 @@ and string = parse
 (*s Generated file message. *)
 
 let yamlpp_message () =
-  output_string "
-<!-- This document was automatically generated with yamlpp
-     (see http://www.lri.fr/~filliatr/yamlpp.en.html),
+  output_string "\
+<!-- This document was automatically generated with yamlpp\
+     (see http://www.lri.fr/~filliatr/yamlpp.en.html),\
      with the following command:\n";
   Array.iter (fun s -> output_string (s ^ " ")) Sys.argv;
   output_string " -->\n\n"
